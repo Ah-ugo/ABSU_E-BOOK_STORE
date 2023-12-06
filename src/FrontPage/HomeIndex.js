@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import NavComp from "./Components/NavComp";
 import { Carousel, Typography } from "antd";
 import { Button, Col, Container, Row } from "react-bootstrap";
@@ -11,6 +11,8 @@ import NavComp4 from "./Components/NavComp4";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import FooterComponent from "./Components/FooterComponent";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 // import OwlCarousel from "react-owl-carousel"
 // import $ from 'jquery';
 // import 'owl.carousel/dist/owl.carousel';
@@ -18,6 +20,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const { Text } = Typography;
 
 export default function HomeIndex() {
+  const [data, setData] = useState([]);
+  const navigate = useNavigate();
   // useEffect(()=>{
   //   $(document).ready(function() {
   //     $('.owl-carousel').owlCarousel({
@@ -41,6 +45,26 @@ export default function HomeIndex() {
   //     });
   //   });
   // },[])
+  useEffect(() => {
+    // localStorage.setItem("cartItems", []);
+    axios
+      .get("https://parseapi.back4app.com/classes/Books", {
+        headers: {
+          "X-Parse-Application-Id": "qi7EPlNyxhbkLy4Df91l5PtUgIQvviwT9eAgupbX",
+          "X-Parse-REST-API-Key": "qCqCI6WnR6oB2Wq7w24IXnblkOby2JRQb4Q9TZww",
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        // Handle the response
+        setData(response.data.results);
+        console.log(data);
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error);
+      });
+  }, []);
   return (
     <div style={{ overflowX: "hidden" }}>
       <NavComp4 />
@@ -128,13 +152,19 @@ export default function HomeIndex() {
                   borderRadius: "10px",
                   // transform: "matrix(-1, 0, 0, 1, 0, 0)",
                 }}
-                className="mb-4">
-                Explore Now
+                className="mb-4 hover:bg-Indigo"
+                onClick={() => navigate("/marketplace")}>
+                <a
+                  className="text-decoration-none text-white"
+                  href="/marketplace">
+                  Explore Now
+                </a>
               </Button>
               {/* </main> */}
             </Col>
             <Col lg={6} sm={6} style={{ marginTop: 0 }}>
               <img
+                alt=""
                 src={require("../FrontPage/Assets/g10.png")}
                 style={{ maxWidth: "100%", height: "100%" }}
               />
@@ -281,6 +311,7 @@ export default function HomeIndex() {
                   <div className="pb-4 pt-3">
                     <Button
                       variant="outline-primary"
+                      onClick={() => navigate("/marketplace")}
                       style={{
                         color: "#393280",
                         borderColor: "#393280",
@@ -451,7 +482,7 @@ export default function HomeIndex() {
         // }}
         className="flex justify-end flex-row align-middle items-center mb-14  mt-5 mx-32">
         <a
-          href="#"
+          href="/marketplace"
           className="flex flex-row align-middle items-center gap-2 text-textColor hover:text-blue-300"
           style={{
             textDecoration: "none",
@@ -577,7 +608,7 @@ export default function HomeIndex() {
               </Text>
 
               <a
-                href="#"
+                href="/marketplace"
                 className="flex flex-row items-center gap-2 align-middle text-borderColor rounded no-underline font-semibold">
                 View More <AiOutlineArrowRight />
               </a>

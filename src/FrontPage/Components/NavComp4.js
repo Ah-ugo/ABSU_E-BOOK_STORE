@@ -156,7 +156,7 @@ export default function NavComp4() {
             Features
           </a>
           <a
-            href="#"
+            href="/marketplace"
             className="text-sm font-semibold leading-6 no-underline text-gray-900">
             Marketplace
           </a>

@@ -5,8 +5,10 @@ import ProductCollectionNav from "./Components/ProductCollectionNav";
 import axios from "axios";
 import CartCard from "./Components/CartCard";
 import CartModal2 from "./Components/CartModal2";
-import { Modal } from "antd";
+import { Alert, Modal } from "antd";
 import { PaystackButton } from "react-paystack";
+import Lottie from "react-lottie-player";
+import LottieItem from "../FrontPage/Assets/animation_lnlr30uq.json";
 
 export default function ProductCollection() {
   const [data, setData] = useState([]);
@@ -20,6 +22,9 @@ export default function ProductCollection() {
   const [showForm, setShowForm] = useState(false);
   const [email, setEmail] = useState();
   const [name, setName] = useState();
+  const [loaded, setLoaded] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const publicKey = "pk_test_b1f87dee23ad4a311ed6fefa1347f0e0ce925e37";
 
   const handleModalChanges = () => {
@@ -55,6 +60,7 @@ export default function ProductCollection() {
         // Handle the response
         setData(response.data.results);
         console.log(response);
+        setLoaded(true);
       })
       .catch((error) => {
         // Handle the error
@@ -82,6 +88,9 @@ export default function ProductCollection() {
 
     // Set the item count in the component state.
     setCount(count);
+    setTimeout(() => {
+      setAlert(!alert);
+    }, 1000);
   };
 
   const removeFromCart = (product) => {
@@ -183,6 +192,7 @@ export default function ProductCollection() {
       .then((response) => {
         // Handle the response
         setData(response.data.results);
+        setLoaded(true);
         console.log(data);
       })
       .catch((error) => {
@@ -191,9 +201,18 @@ export default function ProductCollection() {
       });
   }, []);
 
+  const filteredData = data.filter(
+    ({ title, author, faculty, price }) =>
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      faculty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      price.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // console.log(data);
   return (
     <div>
+      {alert ? <Alert message="Success Text" type="success" /> : null}
       <ProductCollectionNav
         count={count}
         modalOpen={handleModalChanges}
@@ -208,7 +227,7 @@ export default function ProductCollection() {
             id="Search"
             name="search"
             type="text"
-            onChange={(e) => setParam(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             // autocomplete="search"
             required
             class="min-w-0 flex-auto rounded-md border-0 bg-white/5 px-3.5 py-2 text-grayDark shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 capitalize"
@@ -454,21 +473,32 @@ export default function ProductCollection() {
             </div>
           </div>
 
-          <div className="mt-4 grid gap-4 grid-cols-1 lg:grid-cols-4">
-            {data.map((book) => {
-              return (
-                <ProductCard
-                  author={book.author}
-                  title={book.title}
-                  image={book.cover_image.url}
-                  faculty={book.faculty}
-                  no={book.numberAvailable}
-                  price={book.price}
-                  onClick={() => addToCart(book)}
-                />
-              );
-            })}
-          </div>
+          {loaded ? (
+            <div className="mt-4 grid gap-4 grid-cols-1 lg:grid-cols-4">
+              {filteredData.map((book) => {
+                return (
+                  <ProductCard
+                    author={book.author}
+                    title={book.title}
+                    image={book.cover_image.url}
+                    faculty={book.faculty}
+                    no={book.numberAvailable}
+                    price={book.price}
+                    onClick={() => addToCart(book)}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <div className="d-flex items-center justify-center">
+              <Lottie
+                loop
+                animationData={LottieItem}
+                play
+                style={{ width: 300, height: 300 }}
+              />
+            </div>
+          )}
           {/* {cartItems.map((items) => {
             return (
               <CartCard
